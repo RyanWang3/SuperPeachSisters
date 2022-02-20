@@ -38,7 +38,7 @@ int StudentWorld::init()
             //    cout << "Location 5,10 starts with a goomba" << endl;
             //    break;
             case Level::peach:
-                m_actors.push_back(new Peach(this, r * SPRITE_HEIGHT, c * SPRITE_WIDTH));
+                peach=new Peach(this, r * SPRITE_HEIGHT, c * SPRITE_WIDTH);
                 break;
             //case Level::flag:
             //    cout << "Location 5,10 is where a flag is" << endl;
@@ -66,6 +66,7 @@ int StudentWorld::move()
     for (vector<Actor*>::iterator it = m_actors.begin(); it != m_actors.end(); it++) {
         (*it)->doSomething(); 
     }
+    peach->doSomething(); 
     return GWSTATUS_CONTINUE_GAME;
     //decLives();
     //return GWSTATUS_PLAYER_DIED;
@@ -78,49 +79,17 @@ void StudentWorld::cleanUp()
         delete* it; 
         it = m_actors.erase(it);
     }
+    delete peach; 
 }
 StudentWorld::~StudentWorld() {
     cleanUp(); 
 }
-
-void StudentWorld::someFunc()
-{
-    Level lev(assetPath());
-    string level_file = "level01_real.txt";
-    Level::LoadResult result = lev.loadLevel(level_file);
-    if (result == Level::load_fail_file_not_found)
-        cerr << "Could not find level01.txt data file" << endl;
-    else if (result == Level::load_fail_bad_format)
-        cerr << "level01.txt is improperly formatted" << endl;
-    else if (result == Level::load_success)
-    {
-        cerr << "Successfully loaded level" << endl;
-        Level::GridEntry ge;
-        ge = lev.getContentsOf(5, 10); // x=5, y=10
-        switch (ge)
-        {
-        case Level::empty:
-            cout << "Location 5,10 is empty" << endl;
-            break;
-        case Level::koopa:
-            cout << "Location 5,10 starts with a koopa" << endl;
-            break;
-        case Level::goomba:
-            cout << "Location 5,10 starts with a goomba" << endl;
-             break;
-        case Level::peach:
-            cout << "Location 5,10 is where Peach starts" << endl;
-            break;
-        case Level::flag:
-            cout << "Location 5,10 is where a flag is" << endl;
-            break;
-        case Level::block:
-            cout << "Location 5,10 holds a regular block" << endl;
-            break;
-        case Level::star_goodie_block:
-            cout << "Location 5,10 has a star goodie block" << endl;
-                break;
-            // etc…
+bool StudentWorld::isBlockingObjectAt(int x, int y) {
+    
+    for (vector<Actor*>::iterator it = m_actors.begin(); it != m_actors.end(); it++) {
+        if ((*it)->getX() - (SPRITE_WIDTH / 2) <= x && (*it)->getX()+ (SPRITE_WIDTH / 2) >= x  && (*it)->getY() - (SPRITE_HEIGHT / 2) <= y && (*it)->getY() + (SPRITE_HEIGHT / 2) >= y) {
+            return true;
         }
     }
+    return false; 
 }

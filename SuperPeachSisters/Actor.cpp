@@ -76,11 +76,17 @@ void Peach::doSomething()
 		case KEY_PRESS_LEFT:
 			setDirection(180);
 			target_x -= 4;
+			if (getWorld()->isBlockingObjectAt(target_x, target_y)) {
+				return;
+			}
 			moveTo(target_x, target_y);
 			break;
 		case KEY_PRESS_RIGHT:
 			setDirection(0);
 			target_x += 4;
+			if (getWorld()->isBlockingObjectAt(target_x, target_y)) {
+				return;
+			}
 			moveTo(target_x, target_y);
 			break;
 		}

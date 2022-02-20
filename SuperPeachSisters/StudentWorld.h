@@ -15,10 +15,10 @@ public:
   virtual int init();
   virtual int move();
   virtual void cleanUp();
-
+  bool isBlockingObjectAt(int x,int y);
 private:
 	std::vector<Actor*> m_actors;
-	void someFunc();
+	Actor* peach;
 
 };
 

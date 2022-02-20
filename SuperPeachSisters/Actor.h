@@ -43,7 +43,8 @@ public:
 
 private:
 	int hp;
-	bool invincibility;
+	int invincibility_ticks;
+	bool invincibility_status;
 	int powers; 
 };
 #endif // ACTOR_H_

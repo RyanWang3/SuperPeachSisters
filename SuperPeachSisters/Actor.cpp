@@ -1,7 +1,7 @@
 #include "Actor.h"
 #include "StudentWorld.h"
 #include "GameConstants.h"
-
+using namespace std; 
 /*Actor class*/
 Actor::Actor(int ID, StudentWorld* sw, int x, int y, int dir, int depth, double size):
 GraphObject(ID, x, y,dir,depth,size), m_world(sw),m_alive(true)
@@ -48,14 +48,42 @@ void Block::doSomething()
 /*Peach class*/
 
 Peach::Peach(StudentWorld* sw, int x, int y)
-	: Actor(IID_PEACH, sw, x, y),hp(1),invincibility(false),powers(0)
+	: Actor(IID_PEACH, sw, x, y),hp(1),invincibility_ticks(0),invincibility_status(false),powers(0)
 {
 }
 
 void Peach::doSomething()
 {
-	if (!isAlive()) {
-		return;
-	}
+	//if (!isAlive()) {
+	//	return;
+	//}
+	//if (invincibility_status==true&&invincibility_ticks>0) {
+	//	invincibility_ticks--;
+	//}
+	//else if(invincibility_ticks==true && invincibility_ticks==0){
+	//	invincibility_status = false; 
+	//}
 
+	//Step 8
+	int target_x=getX();
+	int target_y=getY();
+	int key;
+	if (getWorld()->getKey(key))
+	{
+		switch (key)
+		{
+			
+		case KEY_PRESS_LEFT:
+			setDirection(180);
+			target_x -= 4;
+			moveTo(target_x, target_y);
+			break;
+		case KEY_PRESS_RIGHT:
+			setDirection(0);
+			target_x += 4;
+			moveTo(target_x, target_y);
+			break;
+		}
+
+	}
 }

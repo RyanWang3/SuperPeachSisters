@@ -46,6 +46,9 @@ int StudentWorld::init()
             case Level::block:
                 m_actors.push_back(new Block(this, r* SPRITE_HEIGHT, c* SPRITE_WIDTH));
                 break;
+            case Level::pipe:
+                m_actors.push_back(new Pipe(this, r * SPRITE_HEIGHT, c * SPRITE_WIDTH));
+                break;
             //case Level::star_goodie_block:
             //    cout << "Location 5,10 has a star goodie block" << endl;
             //    break;

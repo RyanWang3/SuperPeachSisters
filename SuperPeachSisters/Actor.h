@@ -35,6 +35,15 @@ public:
 private:
 };
 
+class Pipe : public Actor
+{
+public:
+	Pipe(StudentWorld* sw, int x, int y);
+	virtual void doSomething();
+
+private:
+};
+
 class Peach : public Actor
 {
 public:

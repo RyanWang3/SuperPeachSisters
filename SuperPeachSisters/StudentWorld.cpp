@@ -12,7 +12,7 @@ GameWorld* createStudentWorld(string assetPath)
 // Students:  Add code to this file, StudentWorld.h, Actor.h, and Actor.cpp
 
 StudentWorld::StudentWorld(string assetPath)
-: GameWorld(assetPath)
+: GameWorld(assetPath),score(0)
 {
 }
 
@@ -45,6 +45,15 @@ int StudentWorld::init()
             //    break;
             case Level::block:
                 m_actors.push_back(new Block(this, r* SPRITE_HEIGHT, c* SPRITE_WIDTH));
+                break;
+            case Level::star_goodie_block:
+                m_actors.push_back(new Block(this, r * SPRITE_HEIGHT, c * SPRITE_WIDTH,POWERUP_STAR));
+                break;
+            case Level::flower_goodie_block:
+                m_actors.push_back(new Block(this, r * SPRITE_HEIGHT, c * SPRITE_WIDTH, POWERUP_FLOWER));
+                break;
+            case Level::mushroom_goodie_block:
+                m_actors.push_back(new Block(this, r * SPRITE_HEIGHT, c * SPRITE_WIDTH,POWERUP_MUSHROOM));
                 break;
             case Level::pipe:
                 m_actors.push_back(new Pipe(this, r * SPRITE_HEIGHT, c * SPRITE_WIDTH));
@@ -95,4 +104,22 @@ bool StudentWorld::isBlockingObjectAt(int x, int y) {
         }
     }
     return false; 
+}
+bool StudentWorld::bonkObjectAt(int x, int y) {
+    bool flag = false;
+    for (vector<Actor*>::iterator it = m_actors.begin(); it != m_actors.end(); it++) {
+        if ((*it)->getX() - (SPRITE_WIDTH / 2) <= x && (*it)->getX() + (SPRITE_WIDTH / 2) >= x && (*it)->getY() - (SPRITE_HEIGHT / 2) <= y && (*it)->getY() + (SPRITE_HEIGHT / 2) >= y) {
+            (*it)->bonk(); 
+            flag= true;
+        }
+    }
+    return flag;
+}
+
+void StudentWorld::updateScore(int x) {
+    score += x; 
+}
+
+Peach* StudentWorld::getPeach() {
+     return (Peach*)peach; 
 }

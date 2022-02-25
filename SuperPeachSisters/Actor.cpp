@@ -11,31 +11,17 @@ GraphObject(ID, x, y,dir,depth,size), m_world(sw),m_alive(true)
 
 Actor::~Actor() {
 }
-/*Twinkler class*/
 
-Twinkler::Twinkler(StudentWorld* sw, int x, int y)
-	: Actor(IID_STAR, sw, x, y)
-{
-}
-
-void Twinkler::doSomething()
-{
-	int key;
-	if (getWorld()->getKey(key))
-	{
-		switch (key)
-		{
-		case KEY_PRESS_SPACE:
-			getWorld()->playSound(SOUND_PLAYER_JUMP);
-			break;
-		}
-	}
-}
 
 /*Block class*/
 
 Block::Block(StudentWorld* sw, int x, int y)
-	: Actor(IID_BLOCK, sw, x, y,0,2,1.0)
+	: Actor(IID_BLOCK, sw, x, y,0,2,1.0), powerup(POWERUP_NONE),powerup_released(false)
+{
+}
+
+Block::Block(StudentWorld* sw, int x, int y,int powerup)
+	: Actor(IID_BLOCK, sw, x, y, 0, 2, 1.0), powerup(powerup), powerup_released(false)
 {
 }
 
@@ -59,7 +45,7 @@ void Pipe::doSomething()
 /*Peach class*/
 
 Peach::Peach(StudentWorld* sw, int x, int y)
-	: Actor(IID_PEACH, sw, x, y),hp(1),invincibility_ticks(0),invincibility_status(false),powers(0)
+	: Actor(IID_PEACH, sw, x, y),hp(1),invincibility_ticks(0),invincibility_status(false),powers(POWERUP_NONE)
 {
 }
 
@@ -73,7 +59,7 @@ void Peach::doSomething()
 	if (invincibility_status==true&&invincibility_ticks>0) {
 		invincibility_ticks--;
 	}
-	else if(invincibility_ticks==true && invincibility_ticks==0){
+	else if(invincibility_status==true && invincibility_ticks==0){
 		invincibility_status = false; 
 	}
 
@@ -105,4 +91,25 @@ void Peach::doSomething()
 		}
 
 	}
+}
+
+void Peach::updatePower(int powerUp) {
+	powers = powerUp; 
+}
+
+//powerup class
+Powerup::Powerup(StudentWorld* sw, int x, int y, int ID,int points)
+	: Actor(ID, sw, x, y, 0, 1, 1.0), point_value(points)
+{
+}
+
+void Powerup::doSomething() {
+	getWorld()->updateScore(point_value); 
+	getWorld()->getPeach()->updatePower(POWERUP_FLOWER);
+	getWorld()->getPeach()->updateHP(2);
+	setDead();
+	getWorld()->playSound(SOUND_PLAYER_POWERUP);
+	return;
+
+
 }

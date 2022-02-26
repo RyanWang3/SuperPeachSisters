@@ -19,7 +19,7 @@ StudentWorld::StudentWorld(string assetPath)
 int StudentWorld::init()
 {
     Level lev(assetPath());
-    string level_file = "level01.txt";
+    string level_file = "level02.txt";
     Level::LoadResult result = lev.loadLevel(level_file);
     Level::GridEntry ge;
     //block = new Block(this, VIEW_WIDTH / 2, VIEW_HEIGHT / 2);
@@ -99,7 +99,7 @@ StudentWorld::~StudentWorld() {
 bool StudentWorld::isBlockingObjectAt(int x, int y) {
     
     for (vector<Actor*>::iterator it = m_actors.begin(); it != m_actors.end(); it++) {
-        if ((*it)->getX() - (SPRITE_WIDTH / 2) <= x && (*it)->getX()+ (SPRITE_WIDTH / 2) >= x  && (*it)->getY() - (SPRITE_HEIGHT / 2) <= y && (*it)->getY() + (SPRITE_HEIGHT / 2) >= y) {
+        if ((*it)->blocksMovement()&&(*it)->getX() - (SPRITE_WIDTH / 2) <= x && (*it)->getX()+ (SPRITE_WIDTH / 2) >= x  && (*it)->getY() - (SPRITE_HEIGHT / 2)  <= y && (*it)->getY() + (SPRITE_HEIGHT / 2)+1 >= y) {
             return true;
         }
     }
@@ -108,8 +108,8 @@ bool StudentWorld::isBlockingObjectAt(int x, int y) {
 bool StudentWorld::bonkObjectAt(int x, int y) {
     bool flag = false;
     for (vector<Actor*>::iterator it = m_actors.begin(); it != m_actors.end(); it++) {
-        if ((*it)->getX() - (SPRITE_WIDTH / 2) <= x && (*it)->getX() + (SPRITE_WIDTH / 2) >= x && (*it)->getY() - (SPRITE_HEIGHT / 2) <= y && (*it)->getY() + (SPRITE_HEIGHT / 2) >= y) {
-            (*it)->bonk(); 
+        if ((*it)->getX() - (SPRITE_WIDTH / 2) <= x && (*it)->getX() + (SPRITE_WIDTH / 2) >= x &&(*it)->getY() - (SPRITE_HEIGHT/2) <= y && (*it)->getY() + (SPRITE_HEIGHT/2) >= y) {
+            (*it)->getBonked(false); 
             flag= true;
         }
     }

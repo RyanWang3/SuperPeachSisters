@@ -1,10 +1,11 @@
 #include "Actor.h"
 #include "StudentWorld.h"
 #include "GameConstants.h"
+#include <iostream>
 using namespace std; 
 /*Actor class*/
-Actor::Actor(int ID, StudentWorld* sw, int x, int y, int dir, int depth, double size):
-GraphObject(ID, x, y,dir,depth,size), m_world(sw),m_alive(true)
+Actor::Actor(int ID, StudentWorld* sw, int x, int y, int dir, int depth, double size,bool blocksmovement):
+GraphObject(ID, x, y,dir,depth,size), m_world(sw),m_alive(true),blockMovement(blocksmovement)
 {
 
 }
@@ -12,12 +13,55 @@ GraphObject(ID, x, y,dir,depth,size), m_world(sw),m_alive(true)
 Actor::~Actor() {
 }
 
+void Actor::reverseDirection() {
+	if (getDirection() == left) {
+		setDirection(right);
+	}
+	else {
+		setDirection(left);
+	}
+}
+void Actor::converDirectionAndDistanceToXY(int dir, int dist, int& destx, int& desty) const {
+	destx = getX();
+	desty = getY(); 
+	switch (dir) {
+	case up:
+		desty=getY() + dist;
+		break;
+	case down:
+		desty = getY() - dist;
+		break;
+	case left:
+		destx = getX() - dist;
+		break;
+	case right:
+		destx =getX()+ dist; 
+	}
+	
+}
+
+void Actor::fallIfPossible(int dist) {
+	int target_x = getX();
+	int target_y = getY();
+	for (int i = 0; i <= 3; i++) {
+		if (getWorld()->isBlockingObjectAt(target_x, target_y-i)) {
+			return;
+		}
+	}
+	converDirectionAndDistanceToXY(down, dist, target_x, target_y);
+	moveTo(target_x, target_y);
+}
+
+void Actor::sufferDamageIfDamageable() {
+
+}
 /*Obstacle class*/
 Obstacle::Obstacle(const int ID, StudentWorld* sw, int x, int y)
-	:Actor(ID, sw, x, y, 0, 2, 1.0)
+	:Actor(ID, sw, x, y, 0, 2, 1.0,true)
 {
 
 }
+
 
 
 /*Block class*/
@@ -51,12 +95,12 @@ Peach::Peach(StudentWorld* sw, int x, int y)
 {
 }
 
-void Peach::doSomething()
+void Peach::doSomethingAux()
 {
 	//step 1
-	if (!isAlive()) {
-		return;
-	}
+	//if (!isAlive()) {
+	//	return;
+	//}
 	//step 2
 	if (invincibility_status==true&&invincibility_ticks>0) {
 		invincibility_ticks--;
@@ -64,10 +108,11 @@ void Peach::doSomething()
 	else if(invincibility_status==true && invincibility_ticks==0){
 		invincibility_status = false; 
 	}
-
+	//step 7
+	fallIfPossible(4); 
 	//Step 8
-	int target_x=getX();
-	int target_y=getY();
+	int target_x=0;
+	int target_y=0;
 	int key;
 	if (getWorld()->getKey(key))
 	{
@@ -75,8 +120,8 @@ void Peach::doSomething()
 		{
 			
 		case KEY_PRESS_LEFT:
-			setDirection(180);
-			target_x -= 4;
+			setDirection(left);
+			converDirectionAndDistanceToXY(left, 4, target_x, target_y);
 			if (getWorld()->isBlockingObjectAt(target_x, target_y)) {
 				return;
 			}
@@ -84,7 +129,7 @@ void Peach::doSomething()
 			break;
 		case KEY_PRESS_RIGHT:
 			setDirection(0);
-			target_x += 4;
+			converDirectionAndDistanceToXY(right, 4, target_x, target_y);
 			if (getWorld()->isBlockingObjectAt(target_x, target_y)) {
 				return;
 			}
@@ -114,7 +159,7 @@ Goodie::Goodie(StudentWorld* sw, int x, int y, int ID,int points)
 {
 }
 
-void Goodie::doSomething() {
+void Goodie::doSomethingAux() {
 	getWorld()->updateScore(point_value); 
 	getWorld()->getPeach()->updatePower(POWERUP_FLOWER);
 	getWorld()->getPeach()->updateHP(2);

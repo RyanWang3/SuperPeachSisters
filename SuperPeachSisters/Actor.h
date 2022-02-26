@@ -11,7 +11,7 @@ public:
 	Actor(const int ID, StudentWorld* sw, int x, int y, int dir = 0, int depth = 0, double size = 1.0);
 	virtual ~Actor(); 
 	virtual void doSomething() = 0;
-	virtual void bonk() {}
+	virtual void bonk() {};
 	StudentWorld* getWorld() { return m_world; }
 	bool isAlive() { return m_alive; }
 	void setDead() { m_alive = false; }
@@ -21,9 +21,9 @@ private:
 	
 };
 
-class Goodie : public Actor {
+class Powerup : public Actor {
 public:
-	Goodie(StudentWorld* sw, int x, int y, int ID, int points);
+	Powerup(StudentWorld* sw, int x, int y, int ID, int points);
 	virtual void doSomething();
 private:
 	int point_value; 
@@ -34,27 +34,26 @@ const int POWERUP_STAR = 1;
 const int POWERUP_FLOWER = 2;
 const int POWERUP_MUSHROOM = 3; 
 
-class Obstacle : public Actor {
-public:
-	Obstacle(const int ID, StudentWorld* sw, int x, int y);
-	virtual void doSomething(){}
-};
-
-class Block : public Obstacle
+class Block : public Actor
 {
 public:
 	Block(StudentWorld* sw, int x, int y);
 	Block(StudentWorld* sw, int x, int y, int power);
+	virtual void doSomething();
 
 private:
 	int powerup;
 	bool powerup_released;
 };
 
-class Pipe : public Obstacle
+class Pipe : public Actor
 {
 public:
 	Pipe(StudentWorld* sw, int x, int y);
+	virtual void doSomething();
+
+
+private:
 };
 
 class Peach : public Actor
@@ -70,10 +69,6 @@ private:
 	int hp;
 	int invincibility_ticks;
 	bool invincibility_status;
-	bool has_flower;
-	bool has_mushroom;
-	bool has_star;
-	int remaining_star_ticks;
-
+	int powers; 
 };
 #endif // ACTOR_H_

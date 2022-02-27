@@ -18,6 +18,8 @@ public:
   virtual void cleanUp();
   bool isBlockingObjectAt(int x,int y);
   bool bonkObjectAt(int x, int y, bool isPeachInvincible);
+  bool overlapsPeach(int x, int y); 
+  bool overlapsEnemy(int x, int y);
   void updateScore(int x);
   std::vector<Actor*>* getActors() { return &m_actors; }
   Peach* getPeach();

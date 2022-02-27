@@ -220,6 +220,8 @@ void Peach::doSomethingAux()
 				getWorld()->playSound(SOUND_PLAYER_FIRE);
 				recharge_before_next_fire = 8;
 				//create fireball
+				converDirectionAndDistanceToXY(getDirection(), 4, special_x, special_y);
+				getWorld()->getActors()->push_back(new PeachFireball(getWorld(), special_x, special_y, getDirection()));
 			}
 			break;
 		}
@@ -246,15 +248,17 @@ Goodie::Goodie(StudentWorld* sw, int x, int y, int ID)
 	: Actor(ID, sw, x, y, 0, 1, 1.0)
 {
 }
- void Goodie::getBonked(bool bonkerIsInvinciblePeach) {
-	 getBonkedAux(); 
-	 getWorld()->getPeach()->updateHP(2);
-	 setDead();
-	 getWorld()->playSound(SOUND_PLAYER_POWERUP);
-	 return;
-}
+
 void Goodie::doSomethingAux() {
 	//step 1
+	if (getWorld()->overlapsPeach(getX(), getY())) {
+		getBonkedAux();
+		getWorld()->getPeach()->updateHP(2);
+		setDead();
+		getWorld()->playSound(SOUND_PLAYER_POWERUP);
+		return;
+	}
+	//step 2
 	fallIfPossible(2);
 	if (!tryToMove(getDirection(), 2)) {
 		reverseDirection();
@@ -309,4 +313,58 @@ Flower::Flower(StudentWorld* w, int x, int y)
 	 getWorld()->getPeach()->updatePower(POWERUP_STAR);
  }
 
+ /*Projectile Class*/
+ Projectile::Projectile(StudentWorld* w, int imageID, int x, int y, int dir)
+	 :Actor(imageID, w, x, y, dir,1,1.0)
+ {
 
+ }
+
+ void Projectile::doSomethingAux() {
+	 //step 1
+	 if (getWorld()->overlapsEnemy(getX(), getY())) {
+		 getWorld()->bonkObjectAt(getX(), getY(), false);
+		 setDead();
+		 return;
+	 }
+	 //step2
+	 fallIfPossible(2);
+	 if (!tryToMove(getDirection(), 2)) {
+		 setDead();
+		 return;
+	 }
+  }
+
+ /*PiranhaFireball class*/
+ PiranhaFireball::PiranhaFireball(StudentWorld* w, int x, int y, int dir)
+	 :Projectile(w,IID_PIRANHA_FIRE,x,y,dir)
+ {
+
+ }
+ void PiranhaFireball::doSomethingAux() {
+	 if (getWorld()->overlapsPeach(getX(), getY())) {
+		 getWorld()->getPeach()->getBonked(false);
+		 setDead();
+		 return;
+	 }
+	 //step2
+	 fallIfPossible(2);
+	 if (!tryToMove(getDirection(), 2)) {
+		 setDead();
+		 return;
+	 }
+ }
+
+ /*PeacFireball class*/
+ PeachFireball::PeachFireball(StudentWorld* w, int x, int y, int dir)
+	 :Projectile(w, IID_PEACH_FIRE, x, y, dir)
+ {
+
+ }
+
+ /*Shell class*/
+ Shell::Shell(StudentWorld* w, int x, int y, int dir)
+	 :Projectile(w, IID_SHELL, x, y, dir)
+ {
+
+ }

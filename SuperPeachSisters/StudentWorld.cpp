@@ -132,3 +132,20 @@ void StudentWorld::updateScore(int x) {
 Peach* StudentWorld::getPeach() {
      return (Peach*)peach; 
 }
+
+bool StudentWorld::overlapsPeach(int x,int y) {
+    if (peach->getX() < (x + SPRITE_WIDTH) && peach->getX() + (SPRITE_WIDTH) > x && peach->getY() < y + SPRITE_HEIGHT && peach->getY() + (SPRITE_HEIGHT) > y) {
+        return true;
+    }
+    return false; 
+
+}
+
+bool StudentWorld::overlapsEnemy(int x, int y) {
+    for (vector<Actor*>::iterator it = m_actors.begin(); it != m_actors.end(); it++) {
+        if ((*it)->isEnemy() && (*it)->getX() < (x + SPRITE_WIDTH) && (*it)->getX() + (SPRITE_WIDTH) > x && (*it)->getY() < y + SPRITE_HEIGHT && (*it)->getY() + (SPRITE_HEIGHT) > y) {
+            return true;
+        }
+    }
+    return false;
+}

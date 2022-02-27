@@ -39,7 +39,8 @@ public:
 
 	// Does this actor block movement?
 	virtual bool blocksMovement() const { return blockMovement; }
-
+	// Is this actor an enemy?
+	virtual bool isEnemy() const { return false; }
 	// Set destx and desty to the coordinates dist pixels away in direction
 // dir from this actor's position.
 	void converDirectionAndDistanceToXY(int dir, int dist, int& destx, int& desty) const;
@@ -56,7 +57,6 @@ private:
 class Goodie : public Actor {
 public:
 	Goodie(StudentWorld* sw, int x, int y, int ID);
-	virtual void getBonked(bool bonkerIsInvinciblePeach);
 private:
 	virtual void doSomethingAux();
 	virtual void getBonkedAux() = 0;
@@ -142,4 +142,38 @@ private:
 
 
 };
+/*Projectile Class*/
+class Projectile : public Actor
+{
+public:
+	Projectile(StudentWorld* w, int imageID, int x, int y, int dir);
+private:
+	virtual void doSomethingAux();
+};
+
+/*PiranhaFireball class*/
+class PiranhaFireball : public Projectile
+{
+public:
+	PiranhaFireball(StudentWorld* w, int x, int y, int dir);
+private:
+	virtual void doSomethingAux();
+
+};
+
+
+class PeachFireball : public Projectile
+{
+public:
+	PeachFireball(StudentWorld* w, int x, int y, int dir);
+
+
+};
+/*Shell class*/
+class Shell : public Projectile
+{
+public:
+	Shell(StudentWorld* w, int x, int y, int dir);
+};
+
 #endif // ACTOR_H_

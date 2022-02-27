@@ -43,7 +43,7 @@ void Actor::converDirectionAndDistanceToXY(int dir, int dist, int& destx, int& d
 void Actor::fallIfPossible(int dist) {
 	int target_x = getX();
 	int target_y = getY();
-	for (int i = 0; i <= 3; i++) {
+	for (int i = 0; i <= dist-1; i++) {
 		if (getWorld()->isBlockingObjectAt(target_x, target_y-i)) {
 			return;
 		}
@@ -55,6 +55,18 @@ void Actor::fallIfPossible(int dist) {
 void Actor::sufferDamageIfDamageable() {
 
 }
+
+bool Actor::tryToMove(int dir, int dist) {
+	int target_x = 0;
+	int target_y = 0;
+	converDirectionAndDistanceToXY(dir, dist, target_x, target_y);
+	if (!getWorld()->isBlockingObjectAt(target_x, target_y)) {
+		moveTo(target_x, target_y);
+		return true;
+	}
+	return false; 
+}
+
 /*Obstacle class*/
 Obstacle::Obstacle(const int ID, StudentWorld* sw, int x, int y)
 	:Actor(ID, sw, x, y, 0, 2, 1.0,true)
@@ -66,19 +78,25 @@ Obstacle::Obstacle(const int ID, StudentWorld* sw, int x, int y)
 
 /*Block class*/
 
-Block::Block(StudentWorld* sw, int x, int y)
-	:Obstacle(IID_BLOCK,sw,x,y),powerup(POWERUP_NONE),powerup_released(false)
-{
-
-}
 
 
-Block::Block(StudentWorld* sw, int x, int y,int powerup)
-	: Obstacle(IID_BLOCK, sw, x, y), powerup(powerup), powerup_released(false)
+
+Block::Block(StudentWorld* sw, int x, int y,int power)
+	: Obstacle(IID_BLOCK, sw, x, y), powerup(power), powerup_released(false)
 {
 }
 
+ void Block::getBonked(bool bonkerIsInvinciblePeach) {
+	 if (powerup == POWERUP_NONE || powerup_released) {
+		 getWorld()->playSound(SOUND_PLAYER_BONK);
 
+	 }
+	 else {
+		 getWorld()->playSound(SOUND_POWERUP_APPEARS);
+		 getWorld()->getActors()->push_back(new Flower(getWorld(), getX(), getY()+8));
+		 powerup_released = true;
+	 }
+}
 /*Pipe class*/
 
 Pipe::Pipe(StudentWorld* sw, int x, int y)
@@ -191,7 +209,6 @@ void Peach::doSomethingAux()
 			if (has_flower&&(recharge_before_next_fire<=0)) {
 				getWorld()->playSound(SOUND_PLAYER_FIRE);
 				recharge_before_next_fire = 8;
-				cerr << "shoot fireball" << endl; 
 				//create fireball
 			}
 			break;
@@ -206,7 +223,7 @@ void Peach::updatePower(int powerUp) {
 	case POWERUP_FLOWER:
 		has_flower = true;
 		break;
-	case POWERUP_MUSHROOM:
+		case POWERUP_MUSHROOM:
 		has_mushroom = true;
 		break;
 	case POWERUP_STAR:
@@ -214,19 +231,46 @@ void Peach::updatePower(int powerUp) {
 	}
 }
 
-//powerup class
+//Goodie class
 Goodie::Goodie(StudentWorld* sw, int x, int y, int ID,int points)
 	: Actor(ID, sw, x, y, 0, 1, 1.0), point_value(points)
 {
 }
-
+ void Goodie::getBonked(bool bonkerIsInvinciblePeach) {
+	 getWorld()->updateScore(point_value);
+	 getWorld()->getPeach()->updatePower(POWERUP_FLOWER);
+	 getWorld()->getPeach()->updateHP(2);
+	 setDead();
+	 getWorld()->playSound(SOUND_PLAYER_POWERUP);
+	 return;
+}
 void Goodie::doSomethingAux() {
-	getWorld()->updateScore(point_value); 
+	//step 1
+
+
+
+}
+
+/*Flower Class*/
+Flower::Flower(StudentWorld* w, int x, int y)
+	:Goodie(w, x, y, IID_FLOWER, 50)
+{
+
+}
+void Flower::getBonked(bool bonkerIsInvinciblePeach) {
+	cout << "flower bonked" << endl; 
+	getWorld()->updateScore(50);
 	getWorld()->getPeach()->updatePower(POWERUP_FLOWER);
 	getWorld()->getPeach()->updateHP(2);
 	setDead();
 	getWorld()->playSound(SOUND_PLAYER_POWERUP);
 	return;
-
-
+ }
+void Flower::doSomethingAux() {
+	fallIfPossible(2);
+	if (!tryToMove(getDirection(), 2)) {
+		reverseDirection();
+		return;
+	}
 }
+

@@ -40,9 +40,9 @@ int StudentWorld::init()
             case Level::peach:
                 peach=new Peach(this, r * SPRITE_HEIGHT, c * SPRITE_WIDTH);
                 break;
-            //case Level::flag:
-            //    cout << "Location 5,10 is where a flag is" << endl;
-            //    break;
+            case Level::flag:
+                m_actors.push_back(new Flower(this, r * SPRITE_HEIGHT, c * SPRITE_WIDTH));
+                break;
             case Level::block:
                 m_actors.push_back(new Block(this, r* SPRITE_HEIGHT, c* SPRITE_WIDTH));
                 break;
@@ -75,8 +75,16 @@ int StudentWorld::move()
     // Notice that the return value GWSTATUS_PLAYER_DIED will cause our framework to end the current level.
     //block->doSomething(); 
    
-    for (vector<Actor*>::iterator it = m_actors.begin(); it != m_actors.end(); it++) {
+    for (vector<Actor*>::iterator it = m_actors.begin(); it != m_actors.end(); ) {
+        
         (*it)->doSomething(); 
+        if ((*it)->isAlive() == false) {
+            delete* it;
+            it = m_actors.erase(it);
+        }
+        else {
+            it++; 
+        }
     }
     peach->doSomething(); 
     return GWSTATUS_CONTINUE_GAME;
@@ -109,7 +117,7 @@ bool StudentWorld::isBlockingObjectAt(int x, int y) {
 bool StudentWorld::bonkObjectAt(int x, int y,bool isPeachInvincible) {
     bool flag = false;
     for (vector<Actor*>::iterator it = m_actors.begin(); it != m_actors.end(); it++) {
-        if ((*it)->blocksMovement() && (*it)->getX() < (x + SPRITE_WIDTH) && (*it)->getX() + (SPRITE_WIDTH) > x && (*it)->getY() < y + SPRITE_HEIGHT && (*it)->getY() + (SPRITE_HEIGHT) > y) {
+        if ((*it)->getX() < (x + SPRITE_WIDTH) && (*it)->getX() + (SPRITE_WIDTH) > x && (*it)->getY() < y + SPRITE_HEIGHT && (*it)->getY() + (SPRITE_HEIGHT) > y) {
             (*it)->getBonked(isPeachInvincible);
             flag= true;
         }

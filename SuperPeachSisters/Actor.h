@@ -4,7 +4,10 @@
 #include "GraphObject.h"
 #include "StudentWorld.h"
 
-
+const int POWERUP_NONE = 0;
+const int POWERUP_STAR = 1;
+const int POWERUP_FLOWER = 2;
+const int POWERUP_MUSHROOM = 3;
 
 class Actor : public GraphObject {
 public:
@@ -40,7 +43,7 @@ public:
 	// Set destx and desty to the coordinates dist pixels away in direction
 // dir from this actor's position.
 	void converDirectionAndDistanceToXY(int dir, int dist, int& destx, int& desty) const;
-
+	bool tryToMove(int dir, int dist);
 private:
 	virtual void doSomethingAux() = 0;
 	StudentWorld* m_world;
@@ -53,15 +56,22 @@ private:
 class Goodie : public Actor {
 public:
 	Goodie(StudentWorld* sw, int x, int y, int ID, int points);
-	virtual void doSomethingAux();
+	virtual void getBonked(bool bonkerIsInvinciblePeach);
 private:
+	virtual void doSomethingAux();
 	int point_value; 
 };
 
-const int POWERUP_NONE = 0;
-const int POWERUP_STAR = 1;
-const int POWERUP_FLOWER = 2;
-const int POWERUP_MUSHROOM = 3; 
+/*Flower Class*/
+class Flower : public Goodie
+{
+public:
+	Flower(StudentWorld* w, int x, int y);
+	virtual void getBonked(bool bonkerIsInvinciblePeach);
+private:
+	virtual void doSomethingAux(); 
+};
+
 
 /*Obstacle Class*/
 class Obstacle : public Actor {
@@ -75,14 +85,13 @@ private:
 class Block : public Obstacle
 {
 public:
-	Block(StudentWorld* sw, int x, int y);
-	Block(StudentWorld* sw, int x, int y, int power);
-
+	Block(StudentWorld* sw, int x, int y, int power=POWERUP_NONE);
+	virtual void getBonked(bool bonkerIsInvinciblePeach);
 private:
 	int powerup;
 	bool powerup_released;
 };
-
+/*Pipe Class*/
 class Pipe : public Obstacle
 {
 public:

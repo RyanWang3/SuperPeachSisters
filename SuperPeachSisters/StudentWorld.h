@@ -19,6 +19,7 @@ public:
   bool isBlockingObjectAt(int x,int y);
   bool bonkObjectAt(int x, int y, bool isPeachInvincible);
   void updateScore(int x);
+  std::vector<Actor*>* getActors() { return &m_actors; }
   Peach* getPeach();
 private:
 	std::vector<Actor*> m_actors;

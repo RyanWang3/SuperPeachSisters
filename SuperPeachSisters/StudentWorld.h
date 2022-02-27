@@ -17,7 +17,7 @@ public:
   virtual int move();
   virtual void cleanUp();
   bool isBlockingObjectAt(int x,int y);
-  bool bonkObjectAt(int x, int y);
+  bool bonkObjectAt(int x, int y, bool isPeachInvincible);
   void updateScore(int x);
   Peach* getPeach();
 private:

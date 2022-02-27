@@ -91,51 +91,112 @@ Pipe::Pipe(StudentWorld* sw, int x, int y)
 /*Peach class*/
 
 Peach::Peach(StudentWorld* sw, int x, int y)
-	: Actor(IID_PEACH, sw, x, y),hp(1),invincibility_ticks(0),invincibility_status(false),has_flower(false),has_mushroom(false),has_star(false),remaining_star_ticks(0)
+	: Actor(IID_PEACH, sw, x, y),hp(1),invincibility_ticks(0),has_flower(false),has_mushroom(false),remaining_jump_distance(0),recharge_before_next_fire(0)
 {
 }
+ void Peach::getBonked(bool bonkerIsInvinciblePeach) {
+	 if (isInvincible()) {
+		 return;
+	 }
+	 hp--;
+	 invincibility_ticks = 10;
+	 if (has_flower)
+		 has_flower = false;
+	 if (has_mushroom)
+		 has_mushroom = false;
+	 if (hp >= 1) {
+		 getWorld()->playSound(SOUND_PLAYER_HURT);
+	 }
+	 else {
+		 setDead();
 
+	 }
+}
 void Peach::doSomethingAux()
 {
+	int target_x = 0;
+	int target_y = 0;
 	//step 1
 	//if (!isAlive()) {
 	//	return;
 	//}
 	//step 2
-	if (invincibility_status==true&&invincibility_ticks>0) {
+	//step 3
+	if (invincibility_ticks>0) {
 		invincibility_ticks--;
 	}
-	else if(invincibility_status==true && invincibility_ticks==0){
-		invincibility_status = false; 
+	//step 4
+	if (recharge_before_next_fire > 0) {
+		recharge_before_next_fire--;
 	}
-	//step 7
-	fallIfPossible(4); 
+	//step 5
+	getWorld()->bonkObjectAt(getX(), getY(),isInvincible());
+	//step 6
+	if (remaining_jump_distance > 0) {
+		converDirectionAndDistanceToXY(up, 4, target_x, target_y);
+		if (getWorld()->isBlockingObjectAt(target_x, target_y)) {
+			getWorld()->bonkObjectAt(target_x, target_y,isInvincible());
+			remaining_jump_distance = 0;
+		}
+		else {
+			moveTo(target_x, target_y);
+			remaining_jump_distance--;
+		}
+	}
+	else {
+		//step 7
+		fallIfPossible(4);
+	}
 	//Step 8
-	int target_x=0;
-	int target_y=0;
+	int special_x = 0;
+	int special_y = 0;
 	int key;
 	if (getWorld()->getKey(key))
 	{
+		//step 9
 		switch (key)
 		{
 			
 		case KEY_PRESS_LEFT:
 			setDirection(left);
-			converDirectionAndDistanceToXY(left, 4, target_x, target_y);
-			if (getWorld()->isBlockingObjectAt(target_x, target_y)) {
-				return;
+			converDirectionAndDistanceToXY(left, 4, special_x, special_y);
+			if (getWorld()->isBlockingObjectAt(special_x, special_y)) {
+				getWorld()->bonkObjectAt(special_x, special_y, isInvincible());
+
 			}
-			moveTo(target_x, target_y);
+			else{
+				moveTo(special_x, special_y);
+			}
 			break;
 		case KEY_PRESS_RIGHT:
 			setDirection(0);
-			converDirectionAndDistanceToXY(right, 4, target_x, target_y);
-			if (getWorld()->isBlockingObjectAt(target_x, target_y)) {
-				return;
+			converDirectionAndDistanceToXY(right, 4, special_x, special_y);
+			if (getWorld()->isBlockingObjectAt(special_x , special_y)) {
+				getWorld()->bonkObjectAt(special_x, special_y, isInvincible());
 			}
-			moveTo(target_x, target_y);
+			else{
+				moveTo(special_x, special_y);
+			}
+			break;
+		case KEY_PRESS_UP:
+			if (getWorld()->isBlockingObjectAt(getX(), getY() - 4)) {
+				if (has_mushroom)
+					remaining_jump_distance = 12;
+				else
+					remaining_jump_distance = 8;
+				getWorld()->playSound(SOUND_PLAYER_JUMP);
+			}
+			break;
+		case KEY_PRESS_SPACE:
+			if (has_flower&&(recharge_before_next_fire<=0)) {
+				getWorld()->playSound(SOUND_PLAYER_FIRE);
+				recharge_before_next_fire = 8;
+				cerr << "shoot fireball" << endl; 
+				//create fireball
+			}
 			break;
 		}
+
 
 	}
 }
@@ -149,7 +210,7 @@ void Peach::updatePower(int powerUp) {
 		has_mushroom = true;
 		break;
 	case POWERUP_STAR:
-		has_star = true; 
+		invincibility_ticks = 10;
 	}
 }
 

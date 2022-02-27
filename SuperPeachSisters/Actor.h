@@ -95,7 +95,6 @@ class Peach : public Actor
 public:
 	Peach(StudentWorld* sw, int x, int y);
 	virtual void getBonked(bool bonkerIsInvinciblePeach);
-	virtual void sufferDamageIfDamageable();
 
 	void updatePower(int powerUp);
 	void updateHP(int hitpts) { hp = hitpts; }
@@ -112,11 +111,11 @@ private:
 	virtual void doSomethingAux();
 	int hp;
 	int invincibility_ticks;
-	bool invincibility_status;
 	bool has_flower;
 	bool has_mushroom;
-	bool has_star;
-	int remaining_star_ticks;
+	int remaining_jump_distance;
+	int recharge_before_next_fire; 
+
 
 };
 #endif // ACTOR_H_

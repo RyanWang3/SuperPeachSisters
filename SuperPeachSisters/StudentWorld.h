@@ -16,6 +16,9 @@ public:
   virtual int init();
   virtual int move();
   virtual void cleanUp();
+  // Record that a level was finished.  The parameter is true if it was
+  // the last level.
+  void endLevel(bool isGameWon);
   bool isBlockingObjectAt(int x,int y);
   bool bonkObjectAt(int x, int y, bool isPeachInvincible);
   bool overlapsPeach(int x, int y); 
@@ -30,6 +33,7 @@ private:
 	std::vector<Actor*> m_actors;
 	Actor* peach;
 	int score;
+	int status;
 };
 
 #endif // STUDENTWORLD_H_

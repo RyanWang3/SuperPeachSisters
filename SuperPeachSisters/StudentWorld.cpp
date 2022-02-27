@@ -2,6 +2,9 @@
 #include "GameConstants.h"
 #include "Actor.h"
 #include <string>
+#include <iostream> // defines the overloads of the << operator
+#include <sstream>  // defines the type std::ostringstream
+#include <iomanip>  // defines the manipulator setw
 using namespace std;
 
 GameWorld* createStudentWorld(string assetPath)
@@ -12,14 +15,19 @@ GameWorld* createStudentWorld(string assetPath)
 // Students:  Add code to this file, StudentWorld.h, Actor.h, and Actor.cpp
 
 StudentWorld::StudentWorld(string assetPath)
-: GameWorld(assetPath),score(0)
+: GameWorld(assetPath),score(0),status(GWSTATUS_CONTINUE_GAME)
 {
 }
 
 int StudentWorld::init()
 {
+    ostringstream oss;
+    oss << "level0";
+    oss << getLevel();
+    oss << ".txt";
+
     Level lev(assetPath());
-    string level_file = "level04.txt";
+    string level_file = oss.str();
     Level::LoadResult result = lev.loadLevel(level_file);
     Level::GridEntry ge;
     //block = new Block(this, VIEW_WIDTH / 2, VIEW_HEIGHT / 2);
@@ -43,7 +51,7 @@ int StudentWorld::init()
                 peach=new Peach(this, r * SPRITE_HEIGHT, c * SPRITE_WIDTH);
                 break;
             case Level::flag:
-                m_actors.push_back(new Shell(this, r * SPRITE_HEIGHT, c * SPRITE_WIDTH,0));
+                m_actors.push_back(new LevelEnder(this, r * SPRITE_HEIGHT, c * SPRITE_WIDTH,false));
                 break;
             case Level::block:
                 m_actors.push_back(new Block(this, r* SPRITE_HEIGHT, c* SPRITE_WIDTH));
@@ -63,11 +71,15 @@ int StudentWorld::init()
             case Level::piranha:
                 m_actors.push_back(new Piranha(this, r * SPRITE_HEIGHT, c * SPRITE_WIDTH));
                 break;
+            case Level::mario:
+                m_actors.push_back(new LevelEnder(this, r * SPRITE_HEIGHT, c * SPRITE_WIDTH, true));
+                break;
                 // etc…
             }
         }
     }
     //someFunc();
+    status = GWSTATUS_CONTINUE_GAME;
     return GWSTATUS_CONTINUE_GAME;
 }
 
@@ -77,6 +89,11 @@ int StudentWorld::move()
     // Notice that the return value GWSTATUS_PLAYER_DIED will cause our framework to end the current level.
     //block->doSomething(); 
     peach->doSomething();
+    if (!peach->isAlive()) {
+        playSound(SOUND_PLAYER_DIE);
+        decLives();
+        return GWSTATUS_PLAYER_DIED;
+    }
     for (vector<Actor*>::iterator it = m_actors.begin(); it != m_actors.end(); ) {
 
         if (!(*it)->isAlive()) {
@@ -88,6 +105,14 @@ int StudentWorld::move()
             it++; 
         }
 
+    }
+    if (status == GWSTATUS_FINISHED_LEVEL) {
+        playSound(SOUND_FINISHED_LEVEL);
+        return GWSTATUS_FINISHED_LEVEL;
+    }
+    if (status == GWSTATUS_PLAYER_WON) {
+        playSound(SOUND_GAME_OVER);
+        return GWSTATUS_PLAYER_WON;
     }
     return GWSTATUS_CONTINUE_GAME;
     //decLives();
@@ -105,6 +130,14 @@ void StudentWorld::cleanUp()
 }
 StudentWorld::~StudentWorld() {
     cleanUp(); 
+}
+void StudentWorld::endLevel(bool isGameWon) {
+    if (isGameWon) {
+        status = GWSTATUS_PLAYER_WON;
+    }
+    else {
+        status = GWSTATUS_FINISHED_LEVEL;
+    }
 }
 bool StudentWorld::isBlockingObjectAt(int x, int y) {
     

@@ -1,7 +1,6 @@
 #include "Actor.h"
 #include "StudentWorld.h"
 #include "GameConstants.h"
-#include <iostream>
 using namespace std; 
 /*Actor class*/
 Actor::Actor(int ID, StudentWorld* sw, int x, int y, int dir, int depth, double size,bool blocksmovement):
@@ -277,7 +276,6 @@ Flower::Flower(StudentWorld* w, int x, int y)
 
 
  void Flower::getBonkedAux() {
-	 cout << "flower power" << endl; 
 	 getWorld()->updateScore(50);
 
 	 getWorld()->getPeach()->updatePower(POWERUP_FLOWER);
@@ -292,7 +290,6 @@ Flower::Flower(StudentWorld* w, int x, int y)
 
 
  void Mushroom::getBonkedAux() {
-	 cout << "mushroom power" << endl;
 	 getWorld()->updateScore(75);
 
 	 getWorld()->getPeach()->updatePower(POWERUP_MUSHROOM);
@@ -307,7 +304,6 @@ Flower::Flower(StudentWorld* w, int x, int y)
 
 
  void Star::getBonkedAux() {
-	 cout << "star power" << endl;
 	 getWorld()->updateScore(150);
 
 	 getWorld()->getPeach()->updatePower(POWERUP_STAR);
@@ -453,3 +449,19 @@ Flower::Flower(StudentWorld* w, int x, int y)
 	  }
 
  }
+
+  /*LevelEnder Class*/
+
+  LevelEnder::LevelEnder(StudentWorld* w, int x, int y, bool isGameEnder)
+	  :Actor((isGameEnder) ? (IID_MARIO) : (IID_FLAG),w,x,y,0,1,1.0),GameEnder(isGameEnder)
+  {
+
+  }
+
+   void LevelEnder::doSomethingAux() {
+	   if (getWorld()->overlapsPeach(getX(), getY())) {
+		   getWorld()->increaseScore(1000);
+		   setDead();
+		   getWorld()->endLevel(GameEnder);
+	   }
+  }

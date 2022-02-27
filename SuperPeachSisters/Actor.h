@@ -219,4 +219,13 @@ private:
 	int firing_delay;
 };
 
+class LevelEnder : public Actor
+{
+public:
+	LevelEnder(StudentWorld* w, int x, int y, bool isGameEnder);
+private:
+	virtual void doSomethingAux();
+	bool GameEnder;
+};
+
 #endif // ACTOR_H_

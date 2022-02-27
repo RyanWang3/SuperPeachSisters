@@ -23,6 +23,9 @@ public:
   void updateScore(int x);
   std::vector<Actor*>* getActors() { return &m_actors; }
   Peach* getPeach();
+  void addActor(Actor* a);
+
+
 private:
 	std::vector<Actor*> m_actors;
 	Actor* peach;

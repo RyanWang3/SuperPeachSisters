@@ -221,7 +221,7 @@ void Peach::doSomethingAux()
 				recharge_before_next_fire = 8;
 				//create fireball
 				converDirectionAndDistanceToXY(getDirection(), 4, special_x, special_y);
-				getWorld()->getActors()->push_back(new PeachFireball(getWorld(), special_x, special_y, getDirection()));
+				getWorld()->addActor(new PeachFireball(getWorld(), special_x, special_y, getDirection()));
 			}
 			break;
 		}
@@ -323,7 +323,7 @@ Flower::Flower(StudentWorld* w, int x, int y)
  void Projectile::doSomethingAux() {
 	 //step 1
 	 if (getWorld()->overlapsEnemy(getX(), getY())) {
-		 getWorld()->bonkObjectAt(getX(), getY(), false);
+		 getWorld()->bonkObjectAt(getX(), getY(), true);
 		 setDead();
 		 return;
 	 }
@@ -368,3 +368,56 @@ Flower::Flower(StudentWorld* w, int x, int y)
  {
 
  }
+ /*Enemy Class*/
+ Enemy::Enemy(StudentWorld* w, int imageID, int x, int y) :
+	 Actor(imageID, w, x, y,(rand()%2)*180)
+ {
+ }
+ void Enemy::getBonked(bool bonkerIsInvinciblePeach) {
+
+	 if (isAlive()&&bonkerIsInvinciblePeach) {
+		 getWorld()->playSound(SOUND_PLAYER_KICK);
+		 getWorld()->increaseScore(100);
+		 setDead();
+		 //getWorld()->cleanDeadActors(); 
+		 getBonkedAux();
+
+	 }
+ }
+ void Enemy::doSomethingAux() {
+	 if (getWorld()->overlapsPeach(getX(), getY())) {
+		 getWorld()->getPeach()->getBonked(false);
+		 return;
+	 }
+	 else {
+		 int target_x = 0;
+		 int target_y = 0;
+		 converDirectionAndDistanceToXY(getDirection(), 1, target_x, target_y);
+		 if (getWorld()->isBlockingObjectAt(target_x, target_y)) {
+			 reverseDirection();
+		 }
+		 else if (!getWorld()->isBlockingObjectAt(target_x, target_y - 1)) {
+			 reverseDirection();
+
+		 }
+		 tryToMove(getDirection(), 1);
+	 }
+ }
+ /*Goomba class*/
+ Goomba::Goomba(StudentWorld* w, int x, int y)
+	 :Enemy(w,IID_GOOMBA,x,y)
+ {
+
+ }
+
+ /*Koopa class*/
+ Koopa::Koopa(StudentWorld* w, int x, int y)
+	 :Enemy(w,IID_KOOPA,x,y)
+ {
+
+ }
+ void Koopa::getBonkedAux() {
+	 getWorld()->addActor(new Shell(getWorld(), getX(), getY(), getDirection()));
+	 cout << "shell created" << endl;
+  }
+

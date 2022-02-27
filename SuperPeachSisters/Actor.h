@@ -3,7 +3,7 @@
 
 #include "GraphObject.h"
 #include "StudentWorld.h"
-
+#include <cstdlib>
 const int POWERUP_NONE = 0;
 const int POWERUP_STAR = 1;
 const int POWERUP_FLOWER = 2;
@@ -174,6 +174,46 @@ class Shell : public Projectile
 {
 public:
 	Shell(StudentWorld* w, int x, int y, int dir);
+};
+/*Enemy class*/
+class Enemy : public Actor
+{
+public:
+	Enemy(StudentWorld* w, int imageID, int x, int y);
+	virtual ~Enemy(){}
+	virtual void getBonked(bool bonkerIsInvinciblePeach);
+	//virtual void sufferDamageIfDamageable();
+	virtual bool isEnemy() const { return true; }
+private:
+	virtual void doSomethingAux();
+	virtual void getBonkedAux(){}
+
+};
+
+
+/*Goomba class*/
+class Goomba : public Enemy
+{
+public:
+	Goomba(StudentWorld* w, int x, int y);
+private:
+};
+/*Koopa class*/
+
+class Koopa : public Enemy
+{
+public:
+	Koopa(StudentWorld* w, int x, int y);
+private:
+	virtual void getBonkedAux();
+
+};
+/*Piranha class*/
+
+class Piranha : public Enemy
+{
+public:
+	Piranha(StudentWorld* w, int x, int y);
 };
 
 #endif // ACTOR_H_

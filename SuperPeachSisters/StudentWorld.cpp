@@ -19,7 +19,7 @@ StudentWorld::StudentWorld(string assetPath)
 int StudentWorld::init()
 {
     Level lev(assetPath());
-    string level_file = "level01.txt";
+    string level_file = "level04.txt";
     Level::LoadResult result = lev.loadLevel(level_file);
     Level::GridEntry ge;
     //block = new Block(this, VIEW_WIDTH / 2, VIEW_HEIGHT / 2);
@@ -31,17 +31,19 @@ int StudentWorld::init()
             //case Level::empty:
             //    cout << "Location 5,10 is empty" << endl;
             //    break;
-            //case Level::koopa:
-            //    cout << "Location 5,10 starts with a koopa" << endl;
-            //    break;
-            //case Level::goomba:
-            //    cout << "Location 5,10 starts with a goomba" << endl;
-            //    break;
+            case Level::koopa:
+                m_actors.push_back(new Koopa(this, r * SPRITE_HEIGHT, c * SPRITE_WIDTH));
+                break;
+            case Level::goomba:
+                m_actors.push_back(new Goomba(this, r * SPRITE_HEIGHT, c * SPRITE_WIDTH));
+                break;
             case Level::peach:
+                //m_actors.push_back(new PeachFireball(this, r * SPRITE_HEIGHT, c * SPRITE_WIDTH,180));
+
                 peach=new Peach(this, r * SPRITE_HEIGHT, c * SPRITE_WIDTH);
                 break;
             case Level::flag:
-                m_actors.push_back(new Flower(this, r * SPRITE_HEIGHT, c * SPRITE_WIDTH));
+                m_actors.push_back(new Shell(this, r * SPRITE_HEIGHT, c * SPRITE_WIDTH,0));
                 break;
             case Level::block:
                 m_actors.push_back(new Block(this, r* SPRITE_HEIGHT, c* SPRITE_WIDTH));
@@ -74,19 +76,19 @@ int StudentWorld::move()
     // This code is here merely to allow the game to build, run, and terminate after you hit enter.
     // Notice that the return value GWSTATUS_PLAYER_DIED will cause our framework to end the current level.
     //block->doSomething(); 
-   
+    peach->doSomething();
     for (vector<Actor*>::iterator it = m_actors.begin(); it != m_actors.end(); ) {
-        
-        (*it)->doSomething(); 
-        if ((*it)->isAlive() == false) {
+
+        if (!(*it)->isAlive()) {
             delete* it;
             it = m_actors.erase(it);
         }
         else {
+            (*it)->doSomething();
             it++; 
         }
+
     }
-    peach->doSomething(); 
     return GWSTATUS_CONTINUE_GAME;
     //decLives();
     //return GWSTATUS_PLAYER_DIED;
@@ -141,11 +143,17 @@ bool StudentWorld::overlapsPeach(int x,int y) {
 
 }
 
+
+
 bool StudentWorld::overlapsEnemy(int x, int y) {
     for (vector<Actor*>::iterator it = m_actors.begin(); it != m_actors.end(); it++) {
-        if ((*it)->isEnemy() && (*it)->getX() < (x + SPRITE_WIDTH) && (*it)->getX() + (SPRITE_WIDTH) > x && (*it)->getY() < y + SPRITE_HEIGHT && (*it)->getY() + (SPRITE_HEIGHT) > y) {
+        if ((*it)->isEnemy() &&(*it)->isAlive()&& (*it)->getX() < (x + SPRITE_WIDTH) && (*it)->getX() + (SPRITE_WIDTH) > x && (*it)->getY() < y + SPRITE_HEIGHT && (*it)->getY() + (SPRITE_HEIGHT) > y) {
             return true;
         }
     }
     return false;
+}
+
+void StudentWorld::addActor(Actor* a) {
+    m_actors.push_back(a);
 }

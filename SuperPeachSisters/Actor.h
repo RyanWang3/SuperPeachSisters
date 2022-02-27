@@ -214,6 +214,9 @@ class Piranha : public Enemy
 {
 public:
 	Piranha(StudentWorld* w, int x, int y);
+private:
+	virtual void doSomethingAux();
+	int firing_delay;
 };
 
 #endif // ACTOR_H_

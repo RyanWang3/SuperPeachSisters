@@ -418,6 +418,38 @@ Flower::Flower(StudentWorld* w, int x, int y)
  }
  void Koopa::getBonkedAux() {
 	 getWorld()->addActor(new Shell(getWorld(), getX(), getY(), getDirection()));
-	 cout << "shell created" << endl;
   }
 
+ /*Piranha Class*/
+ Piranha::Piranha(StudentWorld* w, int x, int y)
+	 :Enemy(w, IID_PIRANHA, x, y),firing_delay(0)
+ {
+
+ }
+
+  void Piranha::doSomethingAux() {
+	  increaseAnimationNumber();
+	  if (getWorld()->overlapsPeach(getX(), getY())) {
+		  getWorld()->getPeach()->getBonked(false);
+		  return;
+	  }
+	  if (!(getWorld()->getPeach()->getY() < getY() + (1.5 * SPRITE_HEIGHT) && getWorld()->getPeach()->getY() > getY() - (1.5 * SPRITE_HEIGHT))) {
+		  return;
+	  }
+	  if (getWorld()->getPeach()->getX() > getX()) {
+		  setDirection(right);
+	  }
+	  else {
+		  setDirection(left);
+	  }
+	  if (firing_delay > 0) {
+		  firing_delay--;
+		  return;
+	  }
+	  if ((getWorld()->getPeach()->getX() < getX() + (8*SPRITE_WIDTH) && getWorld()->getPeach()->getX() > getX() - (8*SPRITE_WIDTH))) {
+		  getWorld()->addActor(new PiranhaFireball(getWorld(), getX(), getY(), getDirection()));
+		  getWorld()->playSound(SOUND_PIRANHA_FIRE);
+		  firing_delay = 40;
+	  }
+
+ }

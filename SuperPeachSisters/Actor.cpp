@@ -93,7 +93,17 @@ Block::Block(StudentWorld* sw, int x, int y,int power)
 	 }
 	 else {
 		 getWorld()->playSound(SOUND_POWERUP_APPEARS);
-		 getWorld()->getActors()->push_back(new Flower(getWorld(), getX(), getY()+8));
+		 switch (powerup) {
+		 case POWERUP_FLOWER:
+			 getWorld()->getActors()->push_back(new Flower(getWorld(), getX(), getY() + 8));
+			 break;
+		 case POWERUP_MUSHROOM:
+			 getWorld()->getActors()->push_back(new Mushroom(getWorld(), getX(), getY() + 8));
+			 break;
+		 case POWERUP_STAR:
+			 getWorld()->getActors()->push_back(new Star(getWorld(), getX(), getY() + 8));
+			 break;
+		 }
 		 powerup_released = true;
 	 }
 }
@@ -227,18 +237,17 @@ void Peach::updatePower(int powerUp) {
 		has_mushroom = true;
 		break;
 	case POWERUP_STAR:
-		invincibility_ticks = 10;
+		invincibility_ticks = 150;
 	}
 }
 
 //Goodie class
-Goodie::Goodie(StudentWorld* sw, int x, int y, int ID,int points)
-	: Actor(ID, sw, x, y, 0, 1, 1.0), point_value(points)
+Goodie::Goodie(StudentWorld* sw, int x, int y, int ID)
+	: Actor(ID, sw, x, y, 0, 1, 1.0)
 {
 }
  void Goodie::getBonked(bool bonkerIsInvinciblePeach) {
-	 getWorld()->updateScore(point_value);
-	 getWorld()->getPeach()->updatePower(POWERUP_FLOWER);
+	 getBonkedAux(); 
 	 getWorld()->getPeach()->updateHP(2);
 	 setDead();
 	 getWorld()->playSound(SOUND_PLAYER_POWERUP);
@@ -246,31 +255,58 @@ Goodie::Goodie(StudentWorld* sw, int x, int y, int ID,int points)
 }
 void Goodie::doSomethingAux() {
 	//step 1
-
+	fallIfPossible(2);
+	if (!tryToMove(getDirection(), 2)) {
+		reverseDirection();
+		return;
+	}
 
 
 }
 
 /*Flower Class*/
 Flower::Flower(StudentWorld* w, int x, int y)
-	:Goodie(w, x, y, IID_FLOWER, 50)
+	:Goodie(w, x, y, IID_FLOWER)
 {
 
 }
-void Flower::getBonked(bool bonkerIsInvinciblePeach) {
-	cout << "flower bonked" << endl; 
-	getWorld()->updateScore(50);
-	getWorld()->getPeach()->updatePower(POWERUP_FLOWER);
-	getWorld()->getPeach()->updateHP(2);
-	setDead();
-	getWorld()->playSound(SOUND_PLAYER_POWERUP);
-	return;
- }
-void Flower::doSomethingAux() {
-	fallIfPossible(2);
-	if (!tryToMove(getDirection(), 2)) {
-		reverseDirection();
-		return;
-	}
+
+
+ void Flower::getBonkedAux() {
+	 cout << "flower power" << endl; 
+	 getWorld()->updateScore(50);
+
+	 getWorld()->getPeach()->updatePower(POWERUP_FLOWER);
 }
+
+ /*Mushroom Class*/
+ Mushroom::Mushroom(StudentWorld* w, int x, int y)
+	 :Goodie(w, x, y, IID_MUSHROOM)
+ {
+
+ }
+
+
+ void Mushroom::getBonkedAux() {
+	 cout << "mushroom power" << endl;
+	 getWorld()->updateScore(75);
+
+	 getWorld()->getPeach()->updatePower(POWERUP_MUSHROOM);
+ }
+
+ /*Mushroom Class*/
+ Star::Star(StudentWorld* w, int x, int y)
+	 :Goodie(w, x, y, IID_STAR)
+ {
+
+ }
+
+
+ void Star::getBonkedAux() {
+	 cout << "star power" << endl;
+	 getWorld()->updateScore(150);
+
+	 getWorld()->getPeach()->updatePower(POWERUP_STAR);
+ }
+
 

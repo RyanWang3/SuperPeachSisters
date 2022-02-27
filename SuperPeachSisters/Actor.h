@@ -55,11 +55,11 @@ private:
 /*Goodie Class*/
 class Goodie : public Actor {
 public:
-	Goodie(StudentWorld* sw, int x, int y, int ID, int points);
+	Goodie(StudentWorld* sw, int x, int y, int ID);
 	virtual void getBonked(bool bonkerIsInvinciblePeach);
 private:
 	virtual void doSomethingAux();
-	int point_value; 
+	virtual void getBonkedAux() = 0;
 };
 
 /*Flower Class*/
@@ -67,11 +67,26 @@ class Flower : public Goodie
 {
 public:
 	Flower(StudentWorld* w, int x, int y);
-	virtual void getBonked(bool bonkerIsInvinciblePeach);
 private:
-	virtual void doSomethingAux(); 
+	virtual void getBonkedAux();
+};
+/*Mushroom Class*/
+class Mushroom : public Goodie
+{
+public:
+	Mushroom(StudentWorld* w, int x, int y);
+private:
+	virtual void getBonkedAux();
 };
 
+/*Star Class*/
+class Star : public Goodie
+{
+public:
+	Star(StudentWorld* w, int x, int y);
+private:
+	virtual void getBonkedAux();
+};
 
 /*Obstacle Class*/
 class Obstacle : public Actor {

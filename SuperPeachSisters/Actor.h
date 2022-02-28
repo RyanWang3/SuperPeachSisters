@@ -24,8 +24,6 @@ public:
 	virtual void getBonked(bool bonkerIsInvinciblePeach)
 	{}
 
-	// Do what the spec says happens when damage is inflicted on this actor.
-	virtual void sufferDamageIfDamageable();
 
 	// Fall the indicated distance if not blocked.
 	void fallIfPossible(int dist);
@@ -184,7 +182,6 @@ public:
 	Enemy(StudentWorld* w, int imageID, int x, int y);
 	virtual ~Enemy(){}
 	virtual void getBonked(bool bonkerIsInvinciblePeach);
-	//virtual void sufferDamageIfDamageable();
 	virtual bool isEnemy() const { return true; }
 private:
 	virtual void doSomethingAux();

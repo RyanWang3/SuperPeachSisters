@@ -23,7 +23,6 @@ public:
   bool bonkObjectAt(int x, int y, bool isPeachInvincible);
   bool overlapsPeach(int x, int y); 
   bool overlapsEnemy(int x, int y);
-  void updateScore(int x);
   std::vector<Actor*>* getActors() { return &m_actors; }
   Peach* getPeach();
   void addActor(Actor* a);
@@ -32,7 +31,6 @@ public:
 private:
 	std::vector<Actor*> m_actors;
 	Actor* peach;
-	int score;
 	int status;
 };
 

@@ -15,7 +15,7 @@ GameWorld* createStudentWorld(string assetPath)
 // Students:  Add code to this file, StudentWorld.h, Actor.h, and Actor.cpp
 
 StudentWorld::StudentWorld(string assetPath)
-: GameWorld(assetPath),score(0),status(GWSTATUS_CONTINUE_GAME)
+: GameWorld(assetPath),status(GWSTATUS_CONTINUE_GAME)
 {
 }
 
@@ -124,10 +124,11 @@ int StudentWorld::move()
     oss << "Lives: ";
     oss << getLives();
     oss << "  Level: ";
-    oss << getLevel();
+    oss.fill('0');
+    oss << setw(2) << getLevel();
     oss << "  Points: ";
     oss.fill('0');
-    oss << setw(5)<<score;
+    oss << setw(5)<<getScore();
     if (getPeach()->hasStarPower()) {
         oss << " StarPower!";
     }
@@ -184,9 +185,6 @@ bool StudentWorld::bonkObjectAt(int x, int y,bool isPeachInvincible) {
     return flag;
 }
 
-void StudentWorld::updateScore(int x) {
-    score += x; 
-}
 
 Peach* StudentWorld::getPeach() {
      return (Peach*)peach; 

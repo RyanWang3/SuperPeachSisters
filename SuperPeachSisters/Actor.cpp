@@ -51,9 +51,7 @@ void Actor::fallIfPossible(int dist) {
 	moveTo(target_x, target_y);
 }
 
-void Actor::sufferDamageIfDamageable() {
 
-}
 
 bool Actor::tryToMove(int dir, int dist) {
 	int target_x = 0;
@@ -280,7 +278,7 @@ Flower::Flower(StudentWorld* w, int x, int y)
 
 
  void Flower::getBonkedAux() {
-	 getWorld()->updateScore(50);
+	 getWorld()->increaseScore(50);
 
 	 getWorld()->getPeach()->updatePower(POWERUP_FLOWER);
 }
@@ -294,7 +292,7 @@ Flower::Flower(StudentWorld* w, int x, int y)
 
 
  void Mushroom::getBonkedAux() {
-	 getWorld()->updateScore(75);
+	 getWorld()->increaseScore(75);
 
 	 getWorld()->getPeach()->updatePower(POWERUP_MUSHROOM);
  }
@@ -308,7 +306,7 @@ Flower::Flower(StudentWorld* w, int x, int y)
 
 
  void Star::getBonkedAux() {
-	 getWorld()->updateScore(150);
+	 getWorld()->increaseScore(150);
 
 	 getWorld()->getPeach()->updatePower(POWERUP_STAR);
  }
@@ -376,7 +374,7 @@ Flower::Flower(StudentWorld* w, int x, int y)
  void Enemy::getBonked(bool bonkerIsInvinciblePeach) {
 
 	 if (isAlive()&&bonkerIsInvinciblePeach) {
-		 getWorld()->updateScore(100);
+		 getWorld()->increaseScore(100);
 		 getWorld()->playSound(SOUND_PLAYER_KICK);
 		 setDead();
 		 //getWorld()->cleanDeadActors(); 

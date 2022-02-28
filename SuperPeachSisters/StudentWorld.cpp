@@ -29,6 +29,11 @@ int StudentWorld::init()
     Level lev(assetPath());
     string level_file = oss.str();
     Level::LoadResult result = lev.loadLevel(level_file);
+    if (result == Level::load_fail_file_not_found)
+        return GWSTATUS_LEVEL_ERROR;
+    else if (result == Level::load_fail_bad_format)
+        return GWSTATUS_LEVEL_ERROR;
+
     Level::GridEntry ge;
     //block = new Block(this, VIEW_WIDTH / 2, VIEW_HEIGHT / 2);
     for (int r = 0; r < GRID_HEIGHT; r++) {
@@ -36,9 +41,9 @@ int StudentWorld::init()
             ge = lev.getContentsOf(r, c); // x=5, y=10
             switch (ge)
             {
-            //case Level::empty:
-            //    cout << "Location 5,10 is empty" << endl;
-            //    break;
+                //case Level::empty:
+                //    cout << "Location 5,10 is empty" << endl;
+                //    break;
             case Level::koopa:
                 m_actors.push_back(new Koopa(this, r * SPRITE_HEIGHT, c * SPRITE_WIDTH));
                 break;
@@ -48,22 +53,22 @@ int StudentWorld::init()
             case Level::peach:
                 //m_actors.push_back(new PeachFireball(this, r * SPRITE_HEIGHT, c * SPRITE_WIDTH,180));
 
-                peach=new Peach(this, r * SPRITE_HEIGHT, c * SPRITE_WIDTH);
+                peach = new Peach(this, r * SPRITE_HEIGHT, c * SPRITE_WIDTH);
                 break;
             case Level::flag:
-                m_actors.push_back(new LevelEnder(this, r * SPRITE_HEIGHT, c * SPRITE_WIDTH,false));
+                m_actors.push_back(new LevelEnder(this, r * SPRITE_HEIGHT, c * SPRITE_WIDTH, false));
                 break;
             case Level::block:
-                m_actors.push_back(new Block(this, r* SPRITE_HEIGHT, c* SPRITE_WIDTH));
+                m_actors.push_back(new Block(this, r * SPRITE_HEIGHT, c * SPRITE_WIDTH));
                 break;
             case Level::star_goodie_block:
-                m_actors.push_back(new Block(this, r * SPRITE_HEIGHT, c * SPRITE_WIDTH,POWERUP_STAR));
+                m_actors.push_back(new Block(this, r * SPRITE_HEIGHT, c * SPRITE_WIDTH, POWERUP_STAR));
                 break;
             case Level::flower_goodie_block:
                 m_actors.push_back(new Block(this, r * SPRITE_HEIGHT, c * SPRITE_WIDTH, POWERUP_FLOWER));
                 break;
             case Level::mushroom_goodie_block:
-                m_actors.push_back(new Block(this, r * SPRITE_HEIGHT, c * SPRITE_WIDTH,POWERUP_MUSHROOM));
+                m_actors.push_back(new Block(this, r * SPRITE_HEIGHT, c * SPRITE_WIDTH, POWERUP_MUSHROOM));
                 break;
             case Level::pipe:
                 m_actors.push_back(new Pipe(this, r * SPRITE_HEIGHT, c * SPRITE_WIDTH));
@@ -77,6 +82,7 @@ int StudentWorld::init()
                 // etc…
             }
         }
+    
     }
     //someFunc();
     status = GWSTATUS_CONTINUE_GAME;
@@ -114,6 +120,24 @@ int StudentWorld::move()
         playSound(SOUND_GAME_OVER);
         return GWSTATUS_PLAYER_WON;
     }
+    ostringstream oss;
+    oss << "Lives: ";
+    oss << getLives();
+    oss << "  Level: ";
+    oss << getLevel();
+    oss << "  Points: ";
+    oss.fill('0');
+    oss << setw(5)<<score;
+    if (getPeach()->hasStarPower()) {
+        oss << " StarPower!";
+    }
+    if (getPeach()->hasShootPower()) {
+        oss << " ShootPower!";
+    }
+    if (getPeach()->hasJumpPower()) {
+        oss << " JumpPower!";
+    }
+    setGameStatText(oss.str());
     return GWSTATUS_CONTINUE_GAME;
     //decLives();
     //return GWSTATUS_PLAYER_DIED;

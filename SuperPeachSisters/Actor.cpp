@@ -118,7 +118,7 @@ Pipe::Pipe(StudentWorld* sw, int x, int y)
 /*Peach class*/
 
 Peach::Peach(StudentWorld* sw, int x, int y)
-	: Actor(IID_PEACH, sw, x, y),hp(1),invincibility_ticks(0),has_flower(false),has_mushroom(false),remaining_jump_distance(0),recharge_before_next_fire(0)
+	: Actor(IID_PEACH, sw, x, y),hp(1),invincibility_ticks(0),has_flower(false),has_mushroom(false),remaining_jump_distance(0),recharge_before_next_fire(0),has_star(false)
 {
 }
  void Peach::getBonked(bool bonkerIsInvinciblePeach) {
@@ -152,17 +152,20 @@ void Peach::doSomethingAux()
 	if (invincibility_ticks>0) {
 		invincibility_ticks--;
 	}
+	else if (has_star) {
+		has_star = false;
+	}
 	//step 4
 	if (recharge_before_next_fire > 0) {
 		recharge_before_next_fire--;
 	}
 	//step 5
-	getWorld()->bonkObjectAt(getX(), getY(),isInvincible());
+	getWorld()->bonkObjectAt(getX(), getY(),hasStarPower());
 	//step 6
 	if (remaining_jump_distance > 0) {
 		converDirectionAndDistanceToXY(up, 4, target_x, target_y);
 		if (getWorld()->isBlockingObjectAt(target_x, target_y)) {
-			getWorld()->bonkObjectAt(target_x, target_y,isInvincible());
+			getWorld()->bonkObjectAt(target_x, target_y,hasStarPower());
 			remaining_jump_distance = 0;
 		}
 		else {
@@ -188,7 +191,7 @@ void Peach::doSomethingAux()
 			setDirection(left);
 			converDirectionAndDistanceToXY(left, 4, special_x, special_y);
 			if (getWorld()->isBlockingObjectAt(special_x, special_y)) {
-				getWorld()->bonkObjectAt(special_x, special_y, isInvincible());
+				getWorld()->bonkObjectAt(special_x, special_y, hasStarPower());
 
 			}
 			else{
@@ -199,7 +202,7 @@ void Peach::doSomethingAux()
 			setDirection(0);
 			converDirectionAndDistanceToXY(right, 4, special_x, special_y);
 			if (getWorld()->isBlockingObjectAt(special_x , special_y)) {
-				getWorld()->bonkObjectAt(special_x, special_y, isInvincible());
+				getWorld()->bonkObjectAt(special_x, special_y, hasStarPower());
 			}
 			else{
 				moveTo(special_x, special_y);
@@ -238,6 +241,7 @@ void Peach::updatePower(int powerUp) {
 		has_mushroom = true;
 		break;
 	case POWERUP_STAR:
+		has_star = true; 
 		invincibility_ticks = 150;
 	}
 }
@@ -372,8 +376,8 @@ Flower::Flower(StudentWorld* w, int x, int y)
  void Enemy::getBonked(bool bonkerIsInvinciblePeach) {
 
 	 if (isAlive()&&bonkerIsInvinciblePeach) {
+		 getWorld()->updateScore(100);
 		 getWorld()->playSound(SOUND_PLAYER_KICK);
-		 getWorld()->increaseScore(100);
 		 setDead();
 		 //getWorld()->cleanDeadActors(); 
 		 getBonkedAux();

@@ -129,6 +129,7 @@ public:
 	bool isInvincible() const { return (invincibility_ticks>0); }
 	bool hasShootPower() const { return has_flower; }
 	bool hasJumpPower() const { return has_mushroom; }
+	bool hasStarPower() const { return has_star; }
 
 
 private:
@@ -137,6 +138,7 @@ private:
 	int invincibility_ticks;
 	bool has_flower;
 	bool has_mushroom;
+	bool has_star;
 	int remaining_jump_distance;
 	int recharge_before_next_fire; 
 

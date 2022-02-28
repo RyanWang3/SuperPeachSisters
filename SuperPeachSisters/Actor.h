@@ -11,7 +11,7 @@ const int POWERUP_MUSHROOM = 3;
 
 class Actor : public GraphObject {
 public:
-	Actor(const int ID, StudentWorld* sw, int x, int y, int dir = 0, int depth = 0, double size = 1.0, bool blocksmovement = false);
+	Actor(const int ID, StudentWorld* sw, int x, int y, int dir = 0, int depth = 0, double size = 1.0);
 	virtual ~Actor(); 
 	// Action to perform for each tick.
 	void doSomething()
@@ -36,7 +36,7 @@ public:
 	void setDead() { m_alive = false; }
 
 	// Does this actor block movement?
-	virtual bool blocksMovement() const { return blockMovement; }
+	virtual bool blocksMovement() const { return false; }
 	// Is this actor an enemy?
 	virtual bool isEnemy() const { return false; }
 	// Set destx and desty to the coordinates dist pixels away in direction
@@ -47,7 +47,6 @@ private:
 	virtual void doSomethingAux() = 0;
 	StudentWorld* m_world;
 	bool m_alive; 
-	bool blockMovement;
 	
 };
 
@@ -89,6 +88,7 @@ private:
 /*Obstacle Class*/
 class Obstacle : public Actor {
 public:
+	virtual bool blocksMovement() const { return true; }
 	Obstacle(const int ID, StudentWorld* sw, int x, int y);
 private:
 	virtual void doSomethingAux(){}
@@ -121,9 +121,6 @@ public:
 	void updatePower(int powerUp);
 	void updateHP(int hitpts) { hp = hitpts; }
 	// Grant Peach invincibility for this number of ticks.
-	void gainInvincibility(int ticks) { invincibility_ticks = ticks; }
-	void gainShootPower() { has_flower = true; }
-	void gainJumpPower() { has_mushroom = true; }
 	bool isInvincible() const { return (invincibility_ticks>0); }
 	bool hasShootPower() const { return has_flower; }
 	bool hasJumpPower() const { return has_mushroom; }
@@ -180,7 +177,6 @@ class Enemy : public Actor
 {
 public:
 	Enemy(StudentWorld* w, int imageID, int x, int y);
-	virtual ~Enemy(){}
 	virtual void getBonked(bool bonkerIsInvinciblePeach);
 	virtual bool isEnemy() const { return true; }
 private:

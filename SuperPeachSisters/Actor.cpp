@@ -3,8 +3,8 @@
 #include "GameConstants.h"
 using namespace std; 
 /*Actor class*/
-Actor::Actor(int ID, StudentWorld* sw, int x, int y, int dir, int depth, double size,bool blocksmovement):
-GraphObject(ID, x, y,dir,depth,size), m_world(sw),m_alive(true),blockMovement(blocksmovement)
+Actor::Actor(int ID, StudentWorld* sw, int x, int y, int dir, int depth, double size):
+GraphObject(ID, x, y,dir,depth,size), m_world(sw),m_alive(true)
 {
 
 }
@@ -66,7 +66,7 @@ bool Actor::tryToMove(int dir, int dist) {
 
 /*Obstacle class*/
 Obstacle::Obstacle(const int ID, StudentWorld* sw, int x, int y)
-	:Actor(ID, sw, x, y, 0, 2, 1.0,true)
+	:Actor(ID, sw, x, y, 0, 2, 1.0)
 {
 
 }
@@ -92,13 +92,13 @@ Block::Block(StudentWorld* sw, int x, int y,int power)
 		 getWorld()->playSound(SOUND_POWERUP_APPEARS);
 		 switch (powerup) {
 		 case POWERUP_FLOWER:
-			 getWorld()->getActors()->push_back(new Flower(getWorld(), getX(), getY() + 8));
+			 getWorld()->addActor(new Flower(getWorld(), getX(), getY() + 8));
 			 break;
 		 case POWERUP_MUSHROOM:
-			 getWorld()->getActors()->push_back(new Mushroom(getWorld(), getX(), getY() + 8));
+			 getWorld()->addActor(new Mushroom(getWorld(), getX(), getY() + 8));
 			 break;
 		 case POWERUP_STAR:
-			 getWorld()->getActors()->push_back(new Star(getWorld(), getX(), getY() + 8));
+			 getWorld()->addActor(new Star(getWorld(), getX(), getY() + 8));
 			 break;
 		 }
 		 powerup_released = true;
